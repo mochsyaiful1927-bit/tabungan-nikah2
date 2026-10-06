@@ -56,24 +56,26 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# Animasi Dino Kuning & Judul Romantis
-col_dino1, col_title, col_dino2 = st.columns([1, 4, 1])
+# Animasi Cowok di Kiri & Cewek di Kanan
+col_cowok, col_title, col_cewek = st.columns([1, 4, 1])
 
-with col_dino1:
-    st.markdown("<img src='https://media1.tenor.com/m/77b8X9YJ3uAAAAAC/cute-dino-yellow-dino.gif' width='90'>", unsafe_allow_html=True)
+with col_cowok:
+    # Animasi Cowok Lucu
+    st.markdown("<img src='https://media1.tenor.com/m/2b6e1sN02Y4AAAAC/cute-boy.gif' width='90'>", unsafe_allow_html=True)
 
 with col_title:
     st.markdown("<h1 style='text-align: center; color: #8c6d6b; margin-bottom: 0;'>💍 Our Journey to Forever 💍</h1>", unsafe_allow_html=True)
 
-with col_dino2:
-    st.markdown("<img src='https://media1.tenor.com/m/77b8X9YJ3uAAAAAC/cute-dino-yellow-dino.gif' width='90'>", unsafe_allow_html=True)
+with col_cewek:
+    # Animasi Cewek Lucu
+    st.markdown("<img src='https://media1.tenor.com/m/L8w5zWp413AAAAAC/cute-girl.gif' width='90'>", unsafe_allow_html=True)
 
 st.markdown("<h3 style='text-align: center; color: #b08984; font-weight: normal; margin-top: 0;'>Tabungan Menuju Halal Fira & Syaiful</h3>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center; color: #a3918f;'>Pantau impian kita bersama secara <i>real-time</i> dari HP atau laptop 💕</p>", unsafe_allow_html=True)
 st.markdown("---")
 
-# 🔗 LINK WEB APP GOOGLE SCRIPT KAMU (Pastikan link baru hasil deploy Apps Script yang benar dipasang di sini)
-WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxbpS8vKgt3cOXfu8pLfP_HWUcRXYejebTRVtVmDsmUb6Q4zwX7a_5HmEo7L1ci5n-o/exec"
+# 🔗 LINK WEB APP GOOGLE SCRIPT KAMU
+WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxnWs3wKrVlfwAx3Rx4wFA70ysig28hPsyZJ2Dz1GlToJC_RxFHU3umSsmsqT90suiM3g/exec"
 
 # Ambil data dari Google Sheets via API
 def load_data():
@@ -127,7 +129,7 @@ if not df.empty and "Jumlah" in df.columns:
 
     col1, col2, col3 = st.columns(3)
     col1.metric("💖 Total Tabungan", f"Rp {masuk:,.0f}")
-    col2.metric("🛍️️ Total Keluar", f"Rp {keluar:,.0f}")
+    col2.metric("🛍 Total Keluar", f"Rp {keluar:,.0f}")
     col3.metric("✨ Saldo Bersih", f"Rp {total_saldo:,.0f}")
 
     st.markdown("<br>", unsafe_allow_html=True)
