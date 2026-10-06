@@ -60,13 +60,13 @@ st.markdown("""
 col_dino1, col_title, col_dino2 = st.columns([1, 4, 1])
 
 with col_dino1:
-    st.markdown("<img src='https://media.giphy.com/media/Ju7l5y9osyymQ/giphy.gif' width='85'>", unsafe_allow_html=True)
+    st.markdown("<img src='https://media1.tenor.com/m/77b8X9YJ3uAAAAAC/cute-dino-yellow-dino.gif' width='90'>", unsafe_allow_html=True)
 
 with col_title:
     st.markdown("<h1 style='text-align: center; color: #8c6d6b; margin-bottom: 0;'>💍 Our Journey to Forever 💍</h1>", unsafe_allow_html=True)
 
 with col_dino2:
-    st.markdown("<img src='https://media.giphy.com/media/Ju7l5y9osyymQ/giphy.gif' width='85'>", unsafe_allow_html=True)
+    st.markdown("<img src='https://media1.tenor.com/m/77b8X9YJ3uAAAAAC/cute-dino-yellow-dino.gif' width='90'>", unsafe_allow_html=True)
 
 st.markdown("<h3 style='text-align: center; color: #b08984; font-weight: normal; margin-top: 0;'>Tabungan Menuju Halal Fira & Syaiful</h3>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center; color: #a3918f;'>Pantau impian kita bersama secara <i>real-time</i> dari HP atau laptop 💕</p>", unsafe_allow_html=True)
