@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 import requests
+import plotly.express as px
+import plotly.graph_objects as go
 
 # Konfigurasi Halaman Web
 st.set_page_config(page_title="Tabungan Nikah Fira & Syaiful", page_icon="💍", layout="centered")
@@ -43,10 +45,8 @@ st.markdown("""
     .heart:nth-child(5) { left: 78%; animation-duration: 6.5s; animation-delay: 1.5s; }
     .heart:nth-child(6) { left: 90%; animation-duration: 7.5s; animation-delay: 4s; }
 
-    /* Supaya konten berada di atas animasi background */
     .block-container { position: relative; z-index: 1; }
 
-    /* Header Banner Impian */
     .banner-card {
         background: linear-gradient(135deg, #d4a39f 0%, #e6ccb2 100%);
         padding: 25px;
@@ -63,7 +63,6 @@ st.markdown("""
         text-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
-    /* Card Kartu Putih Modern */
     .modern-card {
         background: rgba(255, 255, 255, 0.85);
         backdrop-filter: blur(10px);
@@ -74,7 +73,6 @@ st.markdown("""
         margin-bottom: 20px;
     }
 
-    /* Card Rekening Bank */
     .bank-card {
         background: linear-gradient(135deg, #ffffff 0%, #fdfbf7 100%);
         border: 2px dashed #d4a39f;
@@ -85,7 +83,6 @@ st.markdown("""
         box-shadow: 0 4px 15px rgba(0,0,0,0.03);
     }
 
-    /* Badge Status */
     .badge-on-track {
         background-color: #27ae60;
         color: white;
@@ -97,7 +94,6 @@ st.markdown("""
         margin-bottom: 10px;
     }
 
-    /* Sidebar Clean Style */
     [data-testid="stSidebar"] {
         background-color: rgba(255, 255, 255, 0.9);
         backdrop-filter: blur(10px);
@@ -119,7 +115,6 @@ st.markdown("""
     }
     </style>
 
-    <!-- Elemen Love Melayang di Background -->
     <div class="floating-hearts">
         <div class="heart"></div><div class="heart"></div><div class="heart"></div>
         <div class="heart"></div><div class="heart"></div><div class="heart"></div>
@@ -129,7 +124,6 @@ st.markdown("""
 # 🔗 LINK WEB APP GOOGLE SCRIPT KAMU
 WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxbpS8vKgt3cOXfu8pLfP_HWUcRXYejebTRVtVmDsmUb6Q4zwX7a_5HmEo7L1ci5n-o/exec"
 
-# Ambil data dari Google Sheets via API
 def load_data():
     try:
         response = requests.get(WEB_APP_URL)
@@ -143,7 +137,6 @@ def load_data():
 
 df = load_data()
 
-# Hitung Keuangan & Persentase
 if not df.empty and "Jumlah" in df.columns:
     df["Jumlah"] = pd.to_numeric(df["Jumlah"], errors="coerce").fillna(0)
     masuk = df[df["Jenis"] == "Tabungan Masuk"]["Jumlah"].sum()
@@ -154,7 +147,6 @@ else:
     keluar = 0
     total_saldo = 0
 
-# Target Nikah
 TARGET_NIKAH = 50000000 
 progress = min(total_saldo / TARGET_NIKAH, 1.0) if TARGET_NIKAH > 0 else 0
 
@@ -167,7 +159,7 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# Card Rekening Bank Tujuan Tabungan
+# Card Rekening Bank
 st.markdown("""
     <div class="bank-card">
         <p style="color: #8c6d6b; margin: 0 0 5px 0; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">💳 Rekening Tujuan Nabung</p>
@@ -176,11 +168,9 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# Navigasi Tab Modern
-tab1, tab2, tab3 = st.tabs(["📊 Overview", "📈 Grafik & Analisis", "📜 Riwayat Transaksi"])
+tab1, tab2, tab3 = st.tabs(["📊 Overview", "📈 Dashboard Kombinasi & Analisis", "📜 Riwayat Transaksi"])
 
 with tab1:
-    # Card Status & Progress
     st.markdown("""
         <div class="modern-card" style="text-align: center;">
             <span class="badge-on-track">ON TRACK ✨</span>
@@ -190,13 +180,11 @@ with tab1:
         </div>
     """.format(total_saldo, TARGET_NIKAH), unsafe_allow_html=True)
 
-    # Progress Bar Interaktif
     st.progress(progress)
     st.caption(f"Pencapaian: **{progress * 100:.1f}%** dari total target impian.")
     
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # Rincian Detail Angka
     col_a, col_b = st.columns(2)
     with col_a:
         st.metric("💖 Tabungan Masuk", f"Rp {masuk:,.0f}")
@@ -204,43 +192,85 @@ with tab1:
         st.metric("🛍️ Total Keluar", f"Rp {keluar:,.0f}")
 
 with tab2:
-    st.markdown("<h3 style='color: #8c6d6b;'>📈 Ringkasan & Grafik Keuangan</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='color: #8c6d6b;'>📈 Dashboard Kombinasi Keuangan (Pemasukan vs Pengeluaran)</h3>", unsafe_allow_html=True)
     
     if not df.empty:
-        # Menggabungkan data pemasukan dan pengeluaran berdampingan (2 Kolom)
-        col_grafik1, col_grafik2 = st.columns(2)
+        # Menyiapkan data gabungan untuk Plotly
+        # Ringkasan Pemasukan per Orang/Sumber
+        df_masuk = df[df["Jenis"] == "Tabungan Masuk"]
+        df_keluar = df[df["Jenis"] == "Pengeluaran"]
         
-        with col_grafik1:
-            st.markdown("#### 💖 Pemasukan")
-            df_masuk = df[df["Jenis"] == "Tabungan Masuk"]
-            if not df_masuk.empty:
-                chart_masuk = df_masuk.groupby("Nama")["Jumlah"].sum()
-                st.bar_chart(chart_masuk, color="#d4a39f")
-                
-                total_masuk_all = chart_masuk.sum()
-                for nama_orang, nilai in chart_masuk.items():
-                    persen_masuk = (nilai / total_masuk_all * 100) if total_masuk_all > 0 else 0
-                    st.markdown(f"- **{nama_orang}**: Rp {nilai:,.0f} *({persen_masuk:.2f}%)*")
-            else:
-                st.info("Belum ada pemasukan.")
-
-        with col_grafik2:
-            st.markdown("#### 🛍️ Pengeluaran")
-            df_keluar = df[df["Jenis"] == "Pengeluaran"]
-            if not df_keluar.empty:
-                chart_keluar = df_keluar.groupby("Catatan")["Jumlah"].sum()
-                st.bar_chart(chart_keluar, color="#bc8a86")
-                
-                total_keluar_all = chart_keluar.sum()
-                for catatan_item, nilai_keluar in chart_keluar.items():
-                    ket_catatan = catatan_item if catatan_item else "Lain-lain"
-                    persen_keluar = (nilai_keluar / total_keluar_all * 100) if total_keluar_all > 0 else 0
-                    st.markdown(f"- **{ket_catatan}**: Rp {nilai_keluar:,.0f} *({persen_keluar:.2f}%)*")
-            else:
-                st.info("Belum ada pengeluaran.")
+        sum_masuk = df_masuk.groupby("Nama")["Jumlah"].sum().reset_index()
+        sum_masuk["Kategori"] = sum_masuk["Nama"]
+        sum_masuk["Tipe"] = "Tabungan Masuk"
+        
+        sum_keluar = df_keluar.groupby("Catatan")["Jumlah"].sum().reset_index()
+        sum_keluar.rename(columns={"Catatan": "Kategori"}, inplace=True)
+        sum_keluar["Tipe"] = "Pengeluaran"
+        
+        df_combined = pd.concat([sum_masuk, sum_keluar], ignore_index=True)
+        
+        if not df_combined.empty:
+            # Membuat Grafik Kombinasi Interaktif dengan Plotly (Bar Chart + Line Chart)
+            fig = px.bar(
+                df_combined, 
+                x="Kategori", 
+                y="Jumlah", 
+                color="Tipe", 
+                barmode="group",
+                color_discrete_map={"Tabungan Masuk": "#d4a39f", "Pengeluaran": "#bc8a86"},
+                text_auto=',.0f'
+            )
+            
+            # Tambahan garis tren (Line Chart) di atas bar chart agar mirip contoh referensi
+            fig.add_trace(
+                go.Scatter(
+                    x=df_combined["Kategori"],
+                    y=df_combined["Jumlah"],
+                    mode="lines+markers",
+                    name="Tren Nominal",
+                    line=dict(color="#5e4644", width=3)
+                )
+            )
+            
+            fig.update_layout(
+                plot_bgcolor="rgba(0,0,0,0)",
+                paper_bgcolor="rgba(0,0,0,0)",
+                font=dict(family="Inter", color="#5e4644"),
+                margin=dict(t=20, b=20, l=20, r=20),
+                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+            )
+            
+            st.plotly_chart(fig, use_container_width=True)
         
         st.markdown("<hr style='border:0; height:1px; background:#f0e4e1; margin: 20px 0;'>", unsafe_allow_html=True)
-        st.markdown(f"<b>Total Saldo Bersih Saat Ini:</b> Rp {total_saldo:,.0f} | <b>Total Keluar Keseluruhan:</b> Rp {keluar:,.0f}", unsafe_allow_html=True)
+        
+        # Tabel Ringkasan Rinci dengan Persentase Desimal ala Dashboard Eksekutif
+        col_tabel1, col_tabel2 = st.columns(2)
+        
+        with col_tabel1:
+            st.markdown("#### 💖 Detail Pemasukan")
+            if not df_masuk.empty:
+                p_group = df_masuk.groupby("Nama")["Jumlah"].sum()
+                tot_m = p_group.sum()
+                for k, v in p_group.items():
+                    pct = (v / tot_m * 100) if tot_m > 0 else 0
+                    st.markdown(f"- **{k}**: Rp {v:,.0f} *({pct:.2f}%)*")
+            else:
+                st.info("Belum ada data pemasukan.")
+                
+        with col_tabel2:
+            st.markdown("#### 🛍️ Detail Pengeluaran")
+            if not df_keluar.empty:
+                k_group = df_keluar.groupby("Catatan")["Jumlah"].sum()
+                tot_k = k_group.sum()
+                for k, v in k_group.items():
+                    pct = (v / tot_k * 100) if tot_k > 0 else 0
+                    cat_name = k if k else "Lain-lain"
+                    st.markdown(f"- **{cat_name}**: Rp {v:,.0f} *({pct:.2f}%)*")
+            else:
+                st.info("Belum ada data pengeluaran.")
+                
     else:
         st.info("Belum ada data transaksi untuk dianalisis.")
 
