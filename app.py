@@ -195,26 +195,21 @@ with tab2:
     st.markdown("<h3 style='color: #8c6d6b;'>📈 Dashboard Kombinasi Keuangan (Pemasukan vs Pengeluaran)</h3>", unsafe_allow_html=True)
     
     if not df.empty:
-        # Menyiapkan data gabungan untuk Plotly
-        # Ringkasan Pemasukan per Orang/Sumber
         df_masuk = df[df["Jenis"] == "Tabungan Masuk"]
         df_keluar = df[df["Jenis"] == "Pengeluaran"]
         
-        sum_masuk = df_masuk.groupby("Nama")["Jumlah"].sum().reset_index()
-        sum_masuk["Kategori"] = sum_masuk["Nama"]
+        sum_masuk = df_masuk.groupby("Catatan")["Jumlah"].sum().reset_index()
         sum_masuk["Tipe"] = "Tabungan Masuk"
         
         sum_keluar = df_keluar.groupby("Catatan")["Jumlah"].sum().reset_index()
-        sum_keluar.rename(columns={"Catatan": "Kategori"}, inplace=True)
         sum_keluar["Tipe"] = "Pengeluaran"
         
         df_combined = pd.concat([sum_masuk, sum_keluar], ignore_index=True)
         
         if not df_combined.empty:
-            # Membuat Grafik Kombinasi Interaktif dengan Plotly (Bar Chart + Line Chart)
             fig = px.bar(
                 df_combined, 
-                x="Kategori", 
+                x="Catatan", 
                 y="Jumlah", 
                 color="Tipe", 
                 barmode="group",
@@ -222,10 +217,9 @@ with tab2:
                 text_auto=',.0f'
             )
             
-            # Tambahan garis tren (Line Chart) di atas bar chart agar mirip contoh referensi
             fig.add_trace(
                 go.Scatter(
-                    x=df_combined["Kategori"],
+                    x=df_combined["Catatan"],
                     y=df_combined["Jumlah"],
                     mode="lines+markers",
                     name="Tren Nominal",
@@ -245,13 +239,12 @@ with tab2:
         
         st.markdown("<hr style='border:0; height:1px; background:#f0e4e1; margin: 20px 0;'>", unsafe_allow_html=True)
         
-        # Tabel Ringkasan Rinci dengan Persentase Desimal ala Dashboard Eksekutif
         col_tabel1, col_tabel2 = st.columns(2)
         
         with col_tabel1:
             st.markdown("#### 💖 Detail Pemasukan")
             if not df_masuk.empty:
-                p_group = df_masuk.groupby("Nama")["Jumlah"].sum()
+                p_group = df_masuk.groupby("Catatan")["Jumlah"].sum()
                 tot_m = p_group.sum()
                 for k, v in p_group.items():
                     pct = (v / tot_m * 100) if tot_m > 0 else 0
@@ -266,8 +259,7 @@ with tab2:
                 tot_k = k_group.sum()
                 for k, v in k_group.items():
                     pct = (v / tot_k * 100) if tot_k > 0 else 0
-                    cat_name = k if k else "Lain-lain"
-                    st.markdown(f"- **{cat_name}**: Rp {v:,.0f} *({pct:.2f}%)*")
+                    st.markdown(f"- **{k}**: Rp {v:,.0f} *({pct:.2f}%)*")
             else:
                 st.info("Belum ada data pengeluaran.")
                 
@@ -281,14 +273,16 @@ with tab3:
     else:
         st.info("Belum ada data transaksi yang tercatat.")
 
-# Sidebar untuk Input Data
+# Sidebar untuk Input Data dengan Pilihan Kategori Catatan
 st.sidebar.markdown("<h2 style='color: #8c6d6b;'>✨ Tambah Catatan</h2>", unsafe_allow_html=True)
 with st.sidebar.form("form_tabungan", clear_on_submit=True):
     tanggal = st.date_input("Tanggal", datetime.today())
     nama = st.selectbox("Penyetor / Pengambil", ["Syaiful", "Fira"])
     jenis = st.selectbox("Jenis Transaksi", ["Tabungan Masuk", "Pengeluaran"])
     jumlah = st.number_input("Nominal (Rp)", min_value=0, step=50000)
-    catatan = st.text_input("Catatan (contoh: Gaji Syaiful / Beli Undangan)", placeholder="cth: Gaji Bulanan / Beli Cincin")
+    
+    # Pilihan Kategori Catatan Sesuai Permintaan
+    catatan = st.selectbox("Kategori Catatan", ["GAJI", "UANG PRIBADI", "TRANSAKSI PERNIKAHAN", "KEBUTUHAN DLL"])
     
     submit = st.form_submit_button("Simpan ke Cloud 💕")
     
