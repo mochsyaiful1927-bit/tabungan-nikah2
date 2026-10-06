@@ -6,13 +6,82 @@ import requests
 # Konfigurasi Halaman Web
 st.set_page_config(page_title="Tabungan Nikah Fira & Syaiful", page_icon="💍", layout="centered")
 
-# CSS Styling Tambahan agar Romantis & Estetik
+# CSS Styling Tambahan: Background Estetik & Animasi Love Melayang
 st.markdown("""
     <style>
+    /* Background utama warna peach lembut */
     .stApp {
         background-color: #faf7f5;
         font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     }
+    
+    /* Efek Animasi Love Bergerak di Background */
+    @keyframes floatLove {
+        0% {
+            transform: translateY(0vh) scale(0.8);
+            opacity: 0;
+        }
+        50% {
+            opacity: 0.8;
+        }
+        100% {
+            transform: translateY(-100vh) scale(1.2);
+            opacity: 0;
+        }
+    }
+    
+    .floating-hearts {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        z-index: 0;
+        pointer-events: none;
+    }
+    
+    .heart {
+        position: absolute;
+        display: block;
+        width: 20px;
+        height: 20px;
+        background: rgba(212, 163, 159, 0.3);
+        bottom: -20px;
+        animation: floatLove 8s infinite linear;
+        transform: rotate(45deg);
+    }
+    .heart::before, .heart::after {
+        content: '';
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        background: rgba(212, 163, 159, 0.3);
+        border-radius: 50%;
+    }
+    .heart::before {
+        top: -10px;
+        left: 0;
+    }
+    .heart::after {
+        left: -10px;
+        top: 0;
+    }
+    
+    /* Posisi dan kecepatan love yang berbeda-beda */
+    .heart:nth-child(1) { left: 10%; animation-duration: 7s; animation-delay: 0s; }
+    .heart:nth-child(2) { left: 25%; animation-duration: 9s; animation-delay: 2s; }
+    .heart:nth-child(3) { left: 40%; animation-duration: 6s; animation-delay: 4s; }
+    .heart:nth-child(4) { left: 55%; animation-duration: 8s; animation-delay: 1s; }
+    .heart:nth-child(5) { left: 70%; animation-duration: 10s; animation-delay: 3s; }
+    .heart:nth-child(6) { left: 85%; animation-duration: 7s; animation-delay: 5s; }
+
+    /* Supaya konten utama ada di atas animasi love */
+    .block-container {
+        position: relative;
+        z-index: 1;
+    }
+
     [data-testid="stSidebar"] {
         background-color: #fcf8f7;
         border-right: 1px solid #f0e4e1;
@@ -30,13 +99,22 @@ st.markdown("""
         color: white;
     }
     </style>
+
+    <!-- Elemen HTML untuk Love Melayang -->
+    <div class="floating-hearts">
+        <div class="heart"></div>
+        <div class="heart"></div>
+        <div class="heart"></div>
+        <div class="heart"></div>
+        <div class="heart"></div>
+        <div class="heart"></div>
+    </div>
 """, unsafe_allow_html=True)
 
 # Animasi Dino Kuning & Judul Romantis
 col_dino1, col_title, col_dino2 = st.columns([1, 4, 1])
 
 with col_dino1:
-    # GIF Dino Kuning Lucu (Bergerak)
     st.markdown("<img src='https://media.giphy.com/media/LmNwrBhejkK9EFP504/giphy.gif' width='100'>", unsafe_allow_html=True)
 
 with col_title:
