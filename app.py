@@ -116,7 +116,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # 🔗 LINK WEB APP GOOGLE SCRIPT KAMU
-WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxnWs3wKrVlfwAx3Rx4wFA70ysig28hPsyZJ2Dz1GlToJC_RxFHU3umSsmsqT90suiM3g/exec"
+WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxbpS8vKgt3cOXfu8pLfP_HWUcRXYejebTRVtVmDsmUb6Q4zwX7a_5HmEo7L1ci5n-o/exec"
 
 # Ambil data dari Google Sheets via API
 def load_data():
