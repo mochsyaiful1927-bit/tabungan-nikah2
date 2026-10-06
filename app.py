@@ -254,7 +254,7 @@ with st.sidebar.form("form_tabungan", clear_on_submit=True):
     tanggal = st.date_input("Tanggal", datetime.today())
     nama = st.selectbox("Penyetor / Pengambil", ["Syaiful", "Fira"])
     jenis = st.selectbox("Jenis Transaksi", ["Tabungan Masuk", "Pengeluaran"])
-    jumlah = st.number_input("Nominal (Rp)", min_value="", step=50000)
+    jumlah = st.number_input("Nominal (Rp)", min_value=0, step=50000)
     catatan = st.text_input("Catatan (contoh: Gaji Syaiful / Beli Undangan)", placeholder="cth: Gaji Bulanan / Beli Cincin")
     
     submit = st.form_submit_button("Simpan ke Cloud 💕")
