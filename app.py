@@ -56,23 +56,17 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# Judul Romantis dengan Animasi Bergerak (Embed Lottie/HTML Animation)
-col_anim1, col_title, col_anim2 = st.columns([1, 3.5, 1])
+# Judul Romantis dengan Animasi Pasangan di Kiri & Kanan
+col_anim1, col_title, col_anim2 = st.columns([1, 4, 1])
 
 with col_anim1:
-    # Animasi Kartun Cowok Romantis Bergerak
-    st.markdown("""
-        <iframe src="https://lottie.host/embed/5a267f8e-d922-4914-9ff2-3b0922858564/6T3L7sH7q2.json" width="110" height="110" style="border:none; background:transparent;"></iframe>
-    """, unsafe_allow_html=True)
+    st.markdown("<img src='https://media.giphy.com/media/26BRv0ThflsHCqDrG/giphy.gif' width='95' style='border-radius: 10px;'>", unsafe_allow_html=True)
 
 with col_title:
     st.markdown("<h1 style='text-align: center; color: #8c6d6b; margin-bottom: 0;'>💍 Our Journey to Forever 💍</h1>", unsafe_allow_html=True)
 
 with col_anim2:
-    # Animasi Kartun Cewek Romantis Bergerak
-    st.markdown("""
-        <iframe src="https://lottie.host/embed/8254b7ae-3f04-4c8d-8a6a-d46797a2e2cb/uV2r1b0p8x.json" width="110" height="110" style="border:none; background:transparent;"></iframe>
-    """, unsafe_allow_html=True)
+    st.markdown("<img src='https://media.giphy.com/media/26BRv0ThflsHCqDrG/giphy.gif' width='95' style='border-radius: 10px;'>", unsafe_allow_html=True)
 
 st.markdown("<h3 style='text-align: center; color: #b08984; font-weight: normal; margin-top: 0;'>Tabungan Menuju Halal Fira & Syaiful</h3>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center; color: #a3918f;'>Pantau impian kita bersama secara <i>real-time</i> dari HP atau laptop 💕</p>", unsafe_allow_html=True)
