@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime
+from streamlit_gsheets import GSheetsConnection
 
 # Konfigurasi Halaman Web
 st.set_page_config(page_title="Tabungan Nikah Fira & Syaiful", page_icon="💍", layout="centered")
@@ -8,13 +9,19 @@ st.set_page_config(page_title="Tabungan Nikah Fira & Syaiful", page_icon="💍",
 st.title("💍 Tabungan Nikah Fira & Syaiful")
 st.markdown("Pantau target dan catatan tabungan bersama secara *real-time* dari HP atau laptop!")
 
-# Simulasi penyimpanan data sementara
-if 'data_tabungan' not in st.session_state:
-    st.session_state.data_tabungan = pd.DataFrame(columns=["Tanggal", "Nama", "Jenis", "Jumlah (Rp)", "Catatan"])
+# Koneksi ke Google Sheets
+conn = st.connection("gsheets", type=GSheetsConnection)
+
+# Ambil data yang ada di Google Sheets (ttl=0 supaya datanya selalu *real-time* terbaru)
+try:
+    df = conn.read(worksheet="Sheet1", ttl=0)
+    df = df.dropna(how="all") # Hapus baris kosong
+except Exception as e:
+    df = pd.DataFrame(columns=["Tanggal", "Nama", "Jenis", "Jumlah", "Catatan"])
 
 # Sidebar untuk Input Data
 st.sidebar.header("➕ Tambah Tabungan / Pengeluaran")
-with st.sidebar.form("form_tabungan"):
+with st.sidebar.form("form_tabungan", clear_on_submit=True):
     tanggal = st.date_input("Tanggal", datetime.today())
     nama = st.selectbox("Penyetor / Pengambil", ["Syaiful", "Fira", "Bersama"])
     jenis = st.selectbox("Jenis Transaksi", ["Tabungan Masuk", "Pengeluaran"])
@@ -24,23 +31,32 @@ with st.sidebar.form("form_tabungan"):
     submit = st.form_submit_button("Simpan Data")
     
     if submit:
-        new_data = {
+        # Format data baru
+        new_row = pd.DataFrame([{
             "Tanggal": str(tanggal),
             "Nama": nama,
             "Jenis": jenis,
-            "Jumlah (Rp)": jumlah,
+            "Jumlah": jumlah,
             "Catatan": catatan
-        }
-        st.session_state.data_tabungan = pd.concat([st.session_state.data_tabungan, pd.DataFrame([new_data])], ignore_index=True)
-        st.sidebar.success("Data berhasil disimpan!")
+        }])
+        
+        # Gabungkan data lama dan data baru
+        updated_df = pd.concat([df, new_row], ignore_index=True)
+        
+        # Simpan kembali ke Google Sheets
+        conn.update(worksheet="Sheet1", data=updated_df)
+        st.sidebar.success("Data berhasil disimpan ke Cloud! 🎉")
+        st.rerun()
 
 # Ringkasan Saldo (Dashboard)
 st.subheader("📊 Ringkasan Keuangan")
 
-df = st.session_state.data_tabungan
-if not df.empty:
-    masuk = df[df["Jenis"] == "Tabungan Masuk"]["Jumlah (Rp)"].sum()
-    keluar = df[df["Jenis"] == "Pengeluaran"]["Jumlah (Rp)"].sum()
+if not df.empty and "Jumlah" in df.columns:
+    # Pastikan kolom Jumlah berbentuk angka
+    df["Jumlah"] = pd.to_numeric(df["Jumlah"], errors="fillna").fillna(0)
+    
+    masuk = df[df["Jenis"] == "Tabungan Masuk"]["Jumlah"].sum()
+    keluar = df[df["Jenis"] == "Pengeluaran"]["Jumlah"].sum()
     total_saldo = masuk - keluar
 
     col1, col2, col3 = st.columns(3)
@@ -52,4 +68,4 @@ if not df.empty:
     st.subheader("📜 Riwayat Transaksi")
     st.dataframe(df, use_container_width=True)
 else:
-    st.info("Belum ada data transaksi. Silakan input melalui menu di sebelah kiri (atau sidebar di HP).")
+    st.info("Belum ada data transaksi. Silakan input melalui menu di sebelah kiri.")
