@@ -56,16 +56,26 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# Judul Romantis
-st.markdown("<h1 style='text-align: center; color: #8c6d6b;'>💍 Our Journey to Forever 💍</h1>", unsafe_allow_html=True)
-st.markdown("<h3 style='text-align: center; color: #b08984; font-weight: normal;'>Tabungan Menuju Halal Fira & Syaiful</h3>", unsafe_allow_html=True)
+# Animasi Dino Kuning & Judul Romantis
+col_dino1, col_title, col_dino2 = st.columns([1, 4, 1])
+
+with col_dino1:
+    st.markdown("<img src='https://media.giphy.com/media/Ju7l5y9osyymQ/giphy.gif' width='85'>", unsafe_allow_html=True)
+
+with col_title:
+    st.markdown("<h1 style='text-align: center; color: #8c6d6b; margin-bottom: 0;'>💍 Our Journey to Forever 💍</h1>", unsafe_allow_html=True)
+
+with col_dino2:
+    st.markdown("<img src='https://media.giphy.com/media/Ju7l5y9osyymQ/giphy.gif' width='85'>", unsafe_allow_html=True)
+
+st.markdown("<h3 style='text-align: center; color: #b08984; font-weight: normal; margin-top: 0;'>Tabungan Menuju Halal Fira & Syaiful</h3>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center; color: #a3918f;'>Pantau impian kita bersama secara <i>real-time</i> dari HP atau laptop 💕</p>", unsafe_allow_html=True)
 st.markdown("---")
 
-# 🔗 LINK WEB APP GOOGLE SCRIPT KAMU
-WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxnWs3wKrVlfwAx3Rx4wFA70ysig28hPsyZJ2Dz1GlToJC_RxFHU3umSsmsqT90suiM3g/exec"
+# 🔗 LINK WEB APP GOOGLE SCRIPT KAMU (Pastikan link baru hasil deploy Apps Script yang benar dipasang di sini)
+WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxbpS8vKgt3cOXfu8pLfP_HWUcRXYejebTRVtVmDsmUb6Q4zwX7a_5HmEo7L1ci5n-o/exec"
 
-# Ambil data dari Google Sheets via API (Tanpa Cache agar data langsung update)
+# Ambil data dari Google Sheets via API
 def load_data():
     try:
         response = requests.get(WEB_APP_URL)
@@ -73,8 +83,8 @@ def load_data():
         if isinstance(data, list) and len(data) > 1:
             df = pd.DataFrame(data[1:], columns=data[0])
             return df
-    except Exception as e:
-        st.error(f"Gagal memuat data: {e}")
+    except:
+        pass
     return pd.DataFrame(columns=["Tanggal", "Nama", "Jenis", "Jumlah", "Catatan"])
 
 df = load_data()
