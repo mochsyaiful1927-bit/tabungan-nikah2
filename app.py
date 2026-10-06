@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime
-from streamlit_gsheets import GSheetsConnection
+import requests
 
 # Konfigurasi Halaman Web
 st.set_page_config(page_title="Tabungan Nikah Fira & Syaiful", page_icon="💍", layout="centered")
@@ -9,15 +9,23 @@ st.set_page_config(page_title="Tabungan Nikah Fira & Syaiful", page_icon="💍",
 st.title("💍 Tabungan Nikah Fira & Syaiful")
 st.markdown("Pantau target dan catatan tabungan bersama secara *real-time* dari HP atau laptop!")
 
-# Koneksi ke Google Sheets
-conn = st.connection("gsheets", type=GSheetsConnection)
+# 🔗 MASUKKAN LINK WEB APP GOOGLE SCRIPT KAMU DI SINI:
+WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxnWs3wKrVlfwAx3Rx4wFA70ysig28hPsyZJ2DzlGTOLjC_RxFHU3umSsmsqT90suiM3g/exec"
 
-# Ambil data yang ada di Google Sheets (ttl=0 supaya datanya selalu *real-time* terbaru)
-try:
-    df = conn.read(worksheet="Sheet1", ttl=0)
-    df = df.dropna(how="all") # Hapus baris kosong
-except Exception as e:
-    df = pd.DataFrame(columns=["Tanggal", "Nama", "Jenis", "Jumlah", "Catatan"])
+# Ambil data dari Google Sheets via API
+@st.cache_data(ttl=5)
+def load_data():
+    try:
+        response = requests.get(WEB_APP_URL)
+        data = response.json()
+        if len(data) > 1:
+            df = pd.DataFrame(data[1:], columns=data[0])
+            return df
+    except:
+        pass
+    return pd.DataFrame(columns=["Tanggal", "Nama", "Jenis", "Jumlah", "Catatan"])
+
+df = load_data()
 
 # Sidebar untuk Input Data
 st.sidebar.header("➕ Tambah Tabungan / Pengeluaran")
@@ -31,29 +39,25 @@ with st.sidebar.form("form_tabungan", clear_on_submit=True):
     submit = st.form_submit_button("Simpan Data")
     
     if submit:
-        # Format data baru
-        new_row = pd.DataFrame([{
-            "Tanggal": str(tanggal),
-            "Nama": nama,
-            "Jenis": jenis,
-            "Jumlah": jumlah,
-            "Catatan": catatan
-        }])
-        
-        # Gabungkan data lama dan data baru
-        updated_df = pd.concat([df, new_row], ignore_index=True)
-        
-        # Simpan kembali ke Google Sheets
-        conn.update(worksheet="Sheet1", data=updated_df)
-        st.sidebar.success("Data berhasil disimpan ke Cloud! 🎉")
-        st.rerun()
+        payload = {
+            "tanggal": str(tanggal),
+            "nama": nama,
+            "jenis": jenis,
+            "jumlah": jumlah,
+            "catatan": catatan
+        }
+        try:
+            requests.post(WEB_APP_URL, json=payload)
+            st.sidebar.success("Data berhasil disimpan ke Cloud! 🎉")
+            st.rerun()
+        except Exception as e:
+            st.sidebar.error(f"Gagal menyimpan: {e}")
 
 # Ringkasan Saldo (Dashboard)
 st.subheader("📊 Ringkasan Keuangan")
 
 if not df.empty and "Jumlah" in df.columns:
-    # Pastikan kolom Jumlah berbentuk angka
-    df["Jumlah"] = pd.to_numeric(df["Jumlah"], errors="fillna").fillna(0)
+    df["Jumlah"] = pd.to_numeric(df["Jumlah"], errors="coerce").fillna(0)
     
     masuk = df[df["Jenis"] == "Tabungan Masuk"]["Jumlah"].sum()
     keluar = df[df["Jenis"] == "Pengeluaran"]["Jumlah"].sum()
@@ -68,4 +72,4 @@ if not df.empty and "Jumlah" in df.columns:
     st.subheader("📜 Riwayat Transaksi")
     st.dataframe(df, use_container_width=True)
 else:
-    st.info("Belum ada data transaksi. Silakan input melalui menu di sebelah kiri.")
+    st.info("Belum ada data transaksi atau sedang memuat data...")
