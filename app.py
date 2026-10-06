@@ -56,19 +56,23 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# Animasi Cowok di Kiri & Cewek di Kanan
-col_cowok, col_title, col_cewek = st.columns([1, 4, 1])
+# Judul Romantis dengan Animasi Bergerak (Embed Lottie/HTML Animation)
+col_anim1, col_title, col_anim2 = st.columns([1, 3.5, 1])
 
-with col_cowok:
-    # Animasi Cowok Lucu
-    st.markdown("<img src='https://media1.tenor.com/m/2b6e1sN02Y4AAAAC/cute-boy.gif' width='90'>", unsafe_allow_html=True)
+with col_anim1:
+    # Animasi Kartun Cowok Romantis Bergerak
+    st.markdown("""
+        <iframe src="https://lottie.host/embed/5a267f8e-d922-4914-9ff2-3b0922858564/6T3L7sH7q2.json" width="110" height="110" style="border:none; background:transparent;"></iframe>
+    """, unsafe_allow_html=True)
 
 with col_title:
     st.markdown("<h1 style='text-align: center; color: #8c6d6b; margin-bottom: 0;'>💍 Our Journey to Forever 💍</h1>", unsafe_allow_html=True)
 
-with col_cewek:
-    # Animasi Cewek Lucu
-    st.markdown("<img src='https://media1.tenor.com/m/L8w5zWp413AAAAAC/cute-girl.gif' width='90'>", unsafe_allow_html=True)
+with col_anim2:
+    # Animasi Kartun Cewek Romantis Bergerak
+    st.markdown("""
+        <iframe src="https://lottie.host/embed/8254b7ae-3f04-4c8d-8a6a-d46797a2e2cb/uV2r1b0p8x.json" width="110" height="110" style="border:none; background:transparent;"></iframe>
+    """, unsafe_allow_html=True)
 
 st.markdown("<h3 style='text-align: center; color: #b08984; font-weight: normal; margin-top: 0;'>Tabungan Menuju Halal Fira & Syaiful</h3>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center; color: #a3918f;'>Pantau impian kita bersama secara <i>real-time</i> dari HP atau laptop 💕</p>", unsafe_allow_html=True)
