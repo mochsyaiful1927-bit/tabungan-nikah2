@@ -204,43 +204,43 @@ with tab1:
         st.metric("🛍️ Total Keluar", f"Rp {keluar:,.0f}")
 
 with tab2:
-    st.markdown("<h3 style='color: #8c6d6b;'>📈 Grafik & Analisis Keuangan</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='color: #8c6d6b;'>📈 Ringkasan & Grafik Keuangan</h3>", unsafe_allow_html=True)
     
     if not df.empty:
-        # 1. Grafik Kontribusi Pemasukan
-        st.markdown("#### 💖 Grafik Kontribusi Pemasukan")
-        df_masuk = df[df["Jenis"] == "Tabungan Masuk"]
-        if not df_masuk.empty:
-            chart_masuk = df_masuk.groupby("Nama")["Jumlah"].sum()
-            st.bar_chart(chart_masuk, color="#d4a39f")
-            
-            # Teks Persentase Detail
-            total_masuk_all = chart_masuk.sum()
-            for nama_orang, nilai in chart_masuk.items():
-                persen_masuk = (nilai / total_masuk_all * 100) if total_masuk_all > 0 else 0
-                st.markdown(f"- **{nama_orang}**: Rp {nilai:,.0f} *({persen_masuk:.2f}% dari total pemasukan)*")
-        else:
-            st.info("Belum ada data pemasukan untuk ditampilkan dalam grafik.")
+        # Menggabungkan data pemasukan dan pengeluaran berdampingan (2 Kolom)
+        col_grafik1, col_grafik2 = st.columns(2)
+        
+        with col_grafik1:
+            st.markdown("#### 💖 Pemasukan")
+            df_masuk = df[df["Jenis"] == "Tabungan Masuk"]
+            if not df_masuk.empty:
+                chart_masuk = df_masuk.groupby("Nama")["Jumlah"].sum()
+                st.bar_chart(chart_masuk, color="#d4a39f")
+                
+                total_masuk_all = chart_masuk.sum()
+                for nama_orang, nilai in chart_masuk.items():
+                    persen_masuk = (nilai / total_masuk_all * 100) if total_masuk_all > 0 else 0
+                    st.markdown(f"- **{nama_orang}**: Rp {nilai:,.0f} *({persen_masuk:.2f}%)*")
+            else:
+                st.info("Belum ada pemasukan.")
 
-        st.markdown("<hr style='border:0; height:1px; background:#f0e4e1; margin: 25px 0;'>", unsafe_allow_html=True)
-
-        # 2. Grafik Rincian Pengeluaran
-        st.markdown("#### 🛍️ Grafik Rincian Pengeluaran")
-        df_keluar = df[df["Jenis"] == "Pengeluaran"]
-        if not df_keluar.empty:
-            chart_keluar = df_keluar.groupby("Catatan")["Jumlah"].sum()
-            st.bar_chart(chart_keluar, color="#bc8a86")
-            
-            # Teks Persentase Detail
-            total_keluar_all = chart_keluar.sum()
-            for catatan_item, nilai_keluar in chart_keluar.items():
-                ket_catatan = catatan_item if catatan_item else "Lain-lain"
-                persen_keluar = (nilai_keluar / total_keluar_all * 100) if total_keluar_all > 0 else 0
-                st.markdown(f"- **{ket_catatan}**: Rp {nilai_keluar:,.0f} *({persen_keluar:.2f}% dari total pengeluaran)*")
-            
-            st.markdown(f"<br><b>Total Keseluruhan Pengeluaran:</b> Rp {total_keluar_all:,.0f}", unsafe_allow_html=True)
-        else:
-            st.info("Belum ada pengeluaran yang tercatat.")
+        with col_grafik2:
+            st.markdown("#### 🛍️ Pengeluaran")
+            df_keluar = df[df["Jenis"] == "Pengeluaran"]
+            if not df_keluar.empty:
+                chart_keluar = df_keluar.groupby("Catatan")["Jumlah"].sum()
+                st.bar_chart(chart_keluar, color="#bc8a86")
+                
+                total_keluar_all = chart_keluar.sum()
+                for catatan_item, nilai_keluar in chart_keluar.items():
+                    ket_catatan = catatan_item if catatan_item else "Lain-lain"
+                    persen_keluar = (nilai_keluar / total_keluar_all * 100) if total_keluar_all > 0 else 0
+                    st.markdown(f"- **{ket_catatan}**: Rp {nilai_keluar:,.0f} *({persen_keluar:.2f}%)*")
+            else:
+                st.info("Belum ada pengeluaran.")
+        
+        st.markdown("<hr style='border:0; height:1px; background:#f0e4e1; margin: 20px 0;'>", unsafe_allow_html=True)
+        st.markdown(f"<b>Total Saldo Bersih Saat Ini:</b> Rp {total_saldo:,.0f} | <b>Total Keluar Keseluruhan:</b> Rp {keluar:,.0f}", unsafe_allow_html=True)
     else:
         st.info("Belum ada data transaksi untuk dianalisis.")
 
