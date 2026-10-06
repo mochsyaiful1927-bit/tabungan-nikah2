@@ -176,8 +176,8 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# Navigasi Tab Modern (Ditambah Analisis & Persentase)
-tab1, tab2, tab3 = st.tabs(["📊 Overview", "📈 Analisis & Persentase", "📜 Riwayat Transaksi"])
+# Navigasi Tab Modern
+tab1, tab2, tab3 = st.tabs(["📊 Overview", "📈 Grafik & Analisis", "📜 Riwayat Transaksi"])
 
 with tab1:
     # Card Status & Progress
@@ -204,36 +204,39 @@ with tab1:
         st.metric("🛍️ Total Keluar", f"Rp {keluar:,.0f}")
 
 with tab2:
-    st.markdown("<h3 style='color: #8c6d6b;'>📈 Analisis Detail & Persentase Keuangan</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='color: #8c6d6b;'>📈 Grafik & Analisis Keuangan</h3>", unsafe_allow_html=True)
     
     if not df.empty:
-        # Analisis Pemasukan per Penyetor / Sumber
-        st.markdown("#### 💖 Kontribusi Pemasukan (Tabungan Masuk)")
+        # 1. Grafik Kontribusi Pemasukan
+        st.markdown("#### 💖 Grafik Kontribusi Pemasukan")
         df_masuk = df[df["Jenis"] == "Tabungan Masuk"]
         if not df_masuk.empty:
-            pemasukan_per_orang = df_masuk.groupby("Nama")["Jumlah"].sum()
-            total_masuk_all = pemasukan_per_orang.sum()
+            chart_masuk = df_masuk.groupby("Nama")["Jumlah"].sum()
+            st.bar_chart(chart_masuk, color="#d4a39f")
             
-            for nama_orang, nilai in pemasukan_per_orang.items():
+            # Teks Persentase Detail
+            total_masuk_all = chart_masuk.sum()
+            for nama_orang, nilai in chart_masuk.items():
                 persen_masuk = (nilai / total_masuk_all * 100) if total_masuk_all > 0 else 0
-                st.markdown(f"- **{nama_orang}**: Rp {nilai:,.0f} *({persen_masuk:.1f}% dari total pemasukan)*")
+                st.markdown(f"- **{nama_orang}**: Rp {nilai:,.0f} *({persen_masuk:.2f}% dari total pemasukan)*")
         else:
-            st.info("Belum ada data pemasukan.")
+            st.info("Belum ada data pemasukan untuk ditampilkan dalam grafik.")
 
-        st.markdown("<hr style='border:0; height:1px; background:#f0e4e1;'>", unsafe_allow_html=True)
+        st.markdown("<hr style='border:0; height:1px; background:#f0e4e1; margin: 25px 0;'>", unsafe_allow_html=True)
 
-        # Analisis Rincian Pengeluaran & Persentasenya
-        st.markdown("#### 🛍️ Rincian & Persentase Pengeluaran")
+        # 2. Grafik Rincian Pengeluaran
+        st.markdown("#### 🛍️ Grafik Rincian Pengeluaran")
         df_keluar = df[df["Jenis"] == "Pengeluaran"]
         if not df_keluar.empty:
-            # Mengelompokkan berdasarkan catatan/keperluan
-            pengeluaran_detail = df_keluar.groupby("Catatan")["Jumlah"].sum()
-            total_keluar_all = pengeluaran_detail.sum()
+            chart_keluar = df_keluar.groupby("Catatan")["Jumlah"].sum()
+            st.bar_chart(chart_keluar, color="#bc8a86")
             
-            for catatan_item, nilai_keluar in pengeluaran_detail.items():
+            # Teks Persentase Detail
+            total_keluar_all = chart_keluar.sum()
+            for catatan_item, nilai_keluar in chart_keluar.items():
                 ket_catatan = catatan_item if catatan_item else "Lain-lain"
                 persen_keluar = (nilai_keluar / total_keluar_all * 100) if total_keluar_all > 0 else 0
-                st.markdown(f"- **{ket_catatan}**: Rp {nilai_keluar:,.0f} *({persen_keluar:.1f}% dari total pengeluaran)*")
+                st.markdown(f"- **{ket_catatan}**: Rp {nilai_keluar:,.0f} *({persen_keluar:.2f}% dari total pengeluaran)*")
             
             st.markdown(f"<br><b>Total Keseluruhan Pengeluaran:</b> Rp {total_keluar_all:,.0f}", unsafe_allow_html=True)
         else:
