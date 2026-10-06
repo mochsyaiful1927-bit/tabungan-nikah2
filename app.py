@@ -143,7 +143,7 @@ def load_data():
 
 df = load_data()
 
-# Hitung Keuangan
+# Hitung Keuangan & Persentase
 if not df.empty and "Jumlah" in df.columns:
     df["Jumlah"] = pd.to_numeric(df["Jumlah"], errors="coerce").fillna(0)
     masuk = df[df["Jenis"] == "Tabungan Masuk"]["Jumlah"].sum()
@@ -158,7 +158,7 @@ else:
 TARGET_NIKAH = 50000000 
 progress = min(total_saldo / TARGET_NIKAH, 1.0) if TARGET_NIKAH > 0 else 0
 
-# Banner Utama ala Aplikasi Finansial Impian
+# Banner Utama
 st.markdown("""
     <div class="banner-card">
         <div style="font-size: 2.5rem; margin-bottom: 5px;">💍👩‍❤️‍👨👰‍♀️</div>
@@ -176,8 +176,8 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# Navigasi Tab Modern
-tab1, tab2 = st.tabs(["📊 Overview", "📜 Riwayat Transaksi"])
+# Navigasi Tab Modern (Ditambah Analisis & Persentase)
+tab1, tab2, tab3 = st.tabs(["📊 Overview", "📈 Analisis & Persentase", "📜 Riwayat Transaksi"])
 
 with tab1:
     # Card Status & Progress
@@ -203,19 +203,46 @@ with tab1:
     with col_b:
         st.metric("🛍️ Total Keluar", f"Rp {keluar:,.0f}")
 
-    st.markdown("<br>", unsafe_allow_html=True)
-
-    # Pesan Motivasi Romantis
-    st.markdown("""
-        <div style="background-color: rgba(255, 255, 255, 0.8); border-left: 5px solid #d4a39f; padding: 15px; border-radius: 10px; backdrop-filter: blur(5px);">
-            <p style="margin: 0; color: #8c6d6b; font-weight: 500;">
-                💕 <b>Keren! Tabungan kalian on-track nih!</b> Transfer ke rekening Mandiri di atas lalu catat nominalnya lewat menu samping ya! 💍✨
-            </p>
-        </div>
-    """, unsafe_allow_html=True)
-
 with tab2:
-    st.markdown("<h3 style='color: #8c6d6b;'>📜 Riwayat Transaksi</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='color: #8c6d6b;'>📈 Analisis Detail & Persentase Keuangan</h3>", unsafe_allow_html=True)
+    
+    if not df.empty:
+        # Analisis Pemasukan per Penyetor / Sumber
+        st.markdown("#### 💖 Kontribusi Pemasukan (Tabungan Masuk)")
+        df_masuk = df[df["Jenis"] == "Tabungan Masuk"]
+        if not df_masuk.empty:
+            pemasukan_per_orang = df_masuk.groupby("Nama")["Jumlah"].sum()
+            total_masuk_all = pemasukan_per_orang.sum()
+            
+            for nama_orang, nilai in pemasukan_per_orang.items():
+                persen_masuk = (nilai / total_masuk_all * 100) if total_masuk_all > 0 else 0
+                st.markdown(f"- **{nama_orang}**: Rp {nilai:,.0f} *({persen_masuk:.1f}% dari total pemasukan)*")
+        else:
+            st.info("Belum ada data pemasukan.")
+
+        st.markdown("<hr style='border:0; height:1px; background:#f0e4e1;'>", unsafe_allow_html=True)
+
+        # Analisis Rincian Pengeluaran & Persentasenya
+        st.markdown("#### 🛍️ Rincian & Persentase Pengeluaran")
+        df_keluar = df[df["Jenis"] == "Pengeluaran"]
+        if not df_keluar.empty:
+            # Mengelompokkan berdasarkan catatan/keperluan
+            pengeluaran_detail = df_keluar.groupby("Catatan")["Jumlah"].sum()
+            total_keluar_all = pengeluaran_detail.sum()
+            
+            for catatan_item, nilai_keluar in pengeluaran_detail.items():
+                ket_catatan = catatan_item if catatan_item else "Lain-lain"
+                persen_keluar = (nilai_keluar / total_keluar_all * 100) if total_keluar_all > 0 else 0
+                st.markdown(f"- **{ket_catatan}**: Rp {nilai_keluar:,.0f} *({persen_keluar:.1f}% dari total pengeluaran)*")
+            
+            st.markdown(f"<br><b>Total Keseluruhan Pengeluaran:</b> Rp {total_keluar_all:,.0f}", unsafe_allow_html=True)
+        else:
+            st.info("Belum ada pengeluaran yang tercatat.")
+    else:
+        st.info("Belum ada data transaksi untuk dianalisis.")
+
+with tab3:
+    st.markdown("<h3 style='color: #8c6d6b;'>📜 Riwayat Transaksi Lengkap</h3>", unsafe_allow_html=True)
     if not df.empty:
         st.dataframe(df, use_container_width=True)
     else:
@@ -228,7 +255,7 @@ with st.sidebar.form("form_tabungan", clear_on_submit=True):
     nama = st.selectbox("Penyetor / Pengambil", ["Syaiful", "Fira", "Bersama"])
     jenis = st.selectbox("Jenis Transaksi", ["Tabungan Masuk", "Pengeluaran"])
     jumlah = st.number_input("Nominal (Rp)", min_value=0, step=50000)
-    catatan = st.text_input("Catatan (opsional)", placeholder="cth: Transfer Mandiri / Beli seserahan")
+    catatan = st.text_input("Catatan (contoh: Gaji Syaiful / Beli Undangan)", placeholder="cth: Gaji Bulanan / Beli Cincin")
     
     submit = st.form_submit_button("Simpan ke Cloud 💕")
     
