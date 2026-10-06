@@ -162,7 +162,7 @@ progress = min(total_saldo / TARGET_NIKAH, 1.0) if TARGET_NIKAH > 0 else 0
 st.markdown("""
     <div class="banner-card">
         <div style="font-size: 2.5rem; margin-bottom: 5px;">💍👩‍❤️‍👨👰‍♀️</div>
-        <div class="banner-title">Nikah Sama Ayang Fira & Syaiful</div>
+        <div class="banner-title">Nikah Sama Sayang Fira & Syaiful</div>
         <p style="color: #fefefe; font-size: 0.95rem; margin: 0; font-weight: 500;">Menuju lembaran baru yang sakinah, mawaddah, warahmah ✨</p>
     </div>
 """, unsafe_allow_html=True)
