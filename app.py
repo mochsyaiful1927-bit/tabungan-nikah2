@@ -74,6 +74,17 @@ st.markdown("""
         margin-bottom: 20px;
     }
 
+    /* Card Rekening Bank */
+    .bank-card {
+        background: linear-gradient(135deg, #ffffff 0%, #fdfbf7 100%);
+        border: 2px dashed #d4a39f;
+        padding: 18px;
+        border-radius: 16px;
+        text-align: center;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    }
+
     /* Badge Status */
     .badge-on-track {
         background-color: #27ae60;
@@ -143,7 +154,7 @@ else:
     keluar = 0
     total_saldo = 0
 
-# Target Nikah (Bisa disesuaikan total target impian kalian, cth: Rp 50.000.000)
+# Target Nikah
 TARGET_NIKAH = 50000000 
 progress = min(total_saldo / TARGET_NIKAH, 1.0) if TARGET_NIKAH > 0 else 0
 
@@ -153,6 +164,15 @@ st.markdown("""
         <div style="font-size: 2.5rem; margin-bottom: 5px;">💍👩‍❤️‍👨👰‍♀️</div>
         <div class="banner-title">Nikah Sama Ayang Fira & Syaiful</div>
         <p style="color: #fefefe; font-size: 0.95rem; margin: 0; font-weight: 500;">Menuju lembaran baru yang sakinah, mawaddah, warahmah ✨</p>
+    </div>
+""", unsafe_allow_html=True)
+
+# Card Rekening Bank Tujuan Tabungan
+st.markdown("""
+    <div class="bank-card">
+        <p style="color: #8c6d6b; margin: 0 0 5px 0; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">💳 Rekening Tujuan Nabung</p>
+        <h3 style="color: #5e4644; margin: 0; font-weight: 800;">🏦 Mandiri : <code>1430036629572</code></h3>
+        <p style="color: #666; margin: 5px 0 0 0; font-size: 0.95rem; font-weight: 500;">a.n. <b>Magfiroh Izzani Aulia Putri</b></p>
     </div>
 """, unsafe_allow_html=True)
 
@@ -189,7 +209,7 @@ with tab1:
     st.markdown("""
         <div style="background-color: rgba(255, 255, 255, 0.8); border-left: 5px solid #d4a39f; padding: 15px; border-radius: 10px; backdrop-filter: blur(5px);">
             <p style="margin: 0; color: #8c6d6b; font-weight: 500;">
-                💕 <b>Keren! Tabungan kalian on-track nih!</b> Tetap semangat menabung bareng Fira & Syaiful biar impian akad tercapai tepat waktu! 💍✨
+                💕 <b>Keren! Tabungan kalian on-track nih!</b> Transfer ke rekening Mandiri di atas lalu catat nominalnya lewat menu samping ya! 💍✨
             </p>
         </div>
     """, unsafe_allow_html=True)
@@ -208,7 +228,7 @@ with st.sidebar.form("form_tabungan", clear_on_submit=True):
     nama = st.selectbox("Penyetor / Pengambil", ["Syaiful", "Fira", "Bersama"])
     jenis = st.selectbox("Jenis Transaksi", ["Tabungan Masuk", "Pengeluaran"])
     jumlah = st.number_input("Nominal (Rp)", min_value=0, step=50000)
-    catatan = st.text_input("Catatan (opsional)", placeholder="cth: Nabung pertama / Beli seserahan")
+    catatan = st.text_input("Catatan (opsional)", placeholder="cth: Transfer Mandiri / Beli seserahan")
     
     submit = st.form_submit_button("Simpan ke Cloud 💕")
     
