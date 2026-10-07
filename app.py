@@ -242,7 +242,7 @@ with tab2:
         col_tabel1, col_tabel2 = st.columns(2)
         
         with col_tabel1:
-            st.markdown("#### 💖 Detail Pemasukan")
+            st.markdown("#### 💵 Detail Pemasukan")
             if not df_masuk.empty:
                 p_group = df_masuk.groupby("Catatan")["Jumlah"].sum()
                 tot_m = p_group.sum()
